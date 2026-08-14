@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+<channel>
+  <title>Sample Wire Service - No Updates</title>
+  <link>https://example-wire.test/</link>
+  <description>Placeholder feed with no current items, used to test empty-response handling.</description>
+  <language>en-PK</language>
+  <lastBuildDate>Fri, 14 Aug 2026 06:00:00 +0500</lastBuildDate>
+</channel>
+</rss>

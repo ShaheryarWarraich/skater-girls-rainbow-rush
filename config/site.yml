@@ -1,0 +1,19 @@
+# Site identity and URLs.
+title: The Pakistan Wire
+tagline: What's happening in Pakistan, every morning.
+description: >-
+  An automated daily digest of Pakistani news. Stories are gathered from the RSS
+  feeds of Pakistani newsrooms, grouped so one event appears once, summarised in
+  our own words, and linked back to the outlets that did the reporting.
+
+# base_url + base_path build every absolute link. A GitHub *project* Pages site
+# lives under /<repo>/, so base_path must match or every stylesheet and link 404s.
+base_url: https://shaheryarwarraich.github.io
+base_path: /pakistan-wire
+
+timezone: Asia/Karachi
+locale: en-PK
+contact: shaheryararif@gmail.com
+
+# How many dated archive pages to keep before pruning.
+archive_retention_days: 365

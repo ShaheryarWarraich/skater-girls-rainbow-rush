@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+<channel>
+  <title>Al Jazeera - All News</title>
+  <link>https://www.aljazeera.com/</link>
+  <description>Breaking news and analysis from around the world</description>
+  <language>en</language>
+  <item>
+    <title>Pakistan announces additional troop deployment along western border</title>
+    <link>https://www.aljazeera.com/news/2026/8/14/pakistan-announces-additional-troop-deployment-along-western-border</link>
+    <description>Islamabad said it is deploying more troops along its western border amid rising cross-border militant activity.</description>
+    <pubDate>Fri, 14 Aug 2026 09:00:00 +0000</pubDate>
+    <guid isPermaLink="true">https://www.aljazeera.com/news/2026/8/14/pk-border-deployment</guid>
+  </item>
+  <item>
+    <title>Israel intensifies strikes on Gaza City amid ceasefire talks</title>
+    <link>https://www.aljazeera.com/news/2026/8/14/israel-intensifies-strikes-on-gaza-city-amid-ceasefire-talks</link>
+    <description>Israeli forces carried out fresh strikes on Gaza City overnight as mediators pushed for a renewed ceasefire agreement.</description>
+    <pubDate>Fri, 14 Aug 2026 06:20:00 +0000</pubDate>
+    <guid isPermaLink="true">https://www.aljazeera.com/news/2026/8/14/gaza-strikes</guid>
+  </item>
+  <item>
+    <title>Sudan conflict displaces thousands more as fighting spreads</title>
+    <link>https://www.aljazeera.com/news/2026/8/14/sudan-conflict-displaces-thousands-more-as-fighting-spreads</link>
+    <description>Aid agencies say fighting in Sudan's Darfur region has forced thousands of additional families to flee their homes.</description>
+    <pubDate>Fri, 14 Aug 2026 04:10:00 +0000</pubDate>
+    <guid isPermaLink="true">https://www.aljazeera.com/news/2026/8/14/sudan-displacement</guid>
+  </item>
+  <item>
+    <title>Ukraine, Russia trade fresh drone strikes overnight</title>
+    <link>https://www.aljazeera.com/news/2026/8/14/ukraine-russia-trade-fresh-drone-strikes-overnight</link>
+    <description>Both sides reported intercepting dozens of drones overnight as the war in Ukraine continues into its fifth year.</description>
+    <pubDate>Fri, 14 Aug 2026 02:45:00 +0000</pubDate>
+    <guid isPermaLink="true">https://www.aljazeera.com/news/2026/8/14/ukraine-drones</guid>
+  </item>
+  <item>
+    <title>Brazil unveils new Amazon deforestation crackdown measures</title>
+    <link>https://www.aljazeera.com/news/2026/8/13/brazil-unveils-new-amazon-deforestation-crackdown-measures</link>
+    <description>Brazil's government announced tighter enforcement measures aimed at curbing illegal deforestation in the Amazon.</description>
+    <pubDate>Thu, 13 Aug 2026 21:30:00 +0000</pubDate>
+    <guid isPermaLink="true">https://www.aljazeera.com/news/2026/8/13/brazil-amazon</guid>
+  </item>
+  <item>
+    <title>Pakistan, Afghanistan hold talks to ease border tensions</title>
+    <link>https://www.aljazeera.com/news/2026/8/13/pakistan-afghanistan-hold-talks-to-ease-border-tensions</link>
+    <description>Officials from both countries met in Doha for talks aimed at de-escalating tensions along the shared border.</description>
+    <pubDate>Thu, 13 Aug 2026 18:50:00 +0000</pubDate>
+    <guid isPermaLink="true">https://www.aljazeera.com/news/2026/8/13/pk-afghan-talks</guid>
+  </item>
+  <item>
+    <title>EU leaders meet to discuss new migration policy framework</title>
+    <link>https://www.aljazeera.com/news/2026/8/13/eu-leaders-meet-to-discuss-new-migration-policy-framework</link>
+    <description>European Union leaders gathered in Brussels to negotiate a revised framework for handling migration across the bloc.</description>
+    <pubDate>Thu, 13 Aug 2026 15:15:00 +0000</pubDate>
+    <guid isPermaLink="true">https://www.aljazeera.com/news/2026/8/13/eu-migration</guid>
+  </item>
+  <item>
+    <title>Wildfires force evacuations in southern Europe amid heatwave</title>
+    <link>https://www.aljazeera.com/news/2026/8/13/wildfires-force-evacuations-in-southern-europe-amid-heatwave</link>
+    <description>Thousands were evacuated as wildfires spread across parts of southern Europe during an intense summer heatwave.</description>
+    <pubDate>Thu, 13 Aug 2026 12:00:00 +0000</pubDate>
+    <guid isPermaLink="true">https://www.aljazeera.com/news/2026/8/13/europe-wildfires</guid>
+  </item>
+</channel>
+</rss>

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ page_title }} · {{ site.title }}{% endblock %}</title>
+  <meta name="description" content="{{ site.description }}">
+  <link rel="stylesheet" href="{{ url_for('/style.css') }}">
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+
+  <header class="masthead">
+    <div class="wrap">
+      <p class="masthead__title">
+        <a href="{{ url_for('/') }}">{{ site.title }}</a>
+      </p>
+      <hr class="masthead__rule">
+      <div class="masthead__meta">
+        <span class="masthead__tagline">{{ site.tagline }}</span>
+        <span class="masthead__date">{{ generated_at.strftime('%A, %d %B %Y') }} &middot; updated {{ generated_at.strftime('%H:%M UTC') }}</span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="sitenav" aria-label="Primary">
+    <div class="wrap">
+      <ul class="sitenav__list">
+        {% for item in nav %}
+          <li>
+            <a href="{{ item.url }}"{% if active_nav_slug is defined and active_nav_slug == item.slug %} aria-current="page"{% endif %}>{{ item.label }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </nav>
+
+  <main id="content" class="wrap">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="sitefooter">
+    <div class="wrap">
+      <p>{{ site.title }} is an automated digest. Headlines and reporting belong to the outlets linked on each story; we write only the summaries.</p>
+      <p>Questions or corrections: <a href="mailto:{{ site.contact }}">{{ site.contact }}</a></p>
+      <p>Generated {{ generated_at.strftime('%Y-%m-%d %H:%M UTC') }}</p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,51 @@
+{% set active_nav_slug = "sources" %}
+{% extends "base.html" %}
+
+{% block title %}Sources & feed health · {{ site.title }}{% endblock %}
+
+{% block content %}
+
+  <h1 class="page-title">{{ page_title }}</h1>
+  <p class="lede">
+    {{ site.title }} reads these RSS feeds directly and links every story back to the
+    outlet that reported it. This page shows the health of each feed as of the last run.
+  </p>
+
+  {% if rows %}
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Source</th>
+            <th scope="col">Feed</th>
+            <th scope="col">Status</th>
+            <th scope="col">Last success</th>
+            <th scope="col">Consecutive failures</th>
+            <th scope="col">Entries last run</th>
+            <th scope="col">Last error</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+            <tr>
+              <td>
+                <a href="{{ row.homepage }}" rel="noopener nofollow" target="_blank">{{ row.source_name }}</a>
+              </td>
+              <td>{{ row.feed_id }}</td>
+              <td>
+                <span class="pill pill--{{ row.status }}">{{ row.status }}</span>
+              </td>
+              <td>{{ row.last_success.strftime('%Y-%m-%d %H:%M UTC') if row.last_success else '—' }}</td>
+              <td>{{ row.consecutive_failures }}</td>
+              <td>{{ row.entries_last_run if row.entries_last_run is not none else '—' }}</td>
+              <td class="wrap-cell">{{ row.last_error if row.last_error else '—' }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p>No feed health data is available yet.</p>
+  {% endif %}
+
+{% endblock %}

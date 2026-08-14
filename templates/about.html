@@ -1,0 +1,48 @@
+{% set active_nav_slug = "about" %}
+{% extends "base.html" %}
+
+{% block title %}About · {{ site.title }}{% endblock %}
+
+{% block content %}
+
+  <h1 class="page-title">{{ page_title }}</h1>
+  <p class="lede">{{ site.description }}</p>
+
+  <h2 class="story__headline" style="font-size:1.1rem;">How it works</h2>
+  <p class="story__summary">
+    Every morning {{ site.title }} pulls the RSS feeds of Pakistani newsrooms, groups
+    articles that describe the same event, and produces one story per event rather than
+    one per outlet. Each story is summarised in our own words &mdash; the publisher's own
+    blurb is never reproduced here &mdash; and links directly to the reporting it is based
+    on, both the lead outlet and any others that also covered it.
+  </p>
+  <p class="story__summary">
+    Stories are scored and ranked by an editorial model where available. When that model
+    is unavailable or fails, the edition falls back to a transparent, rule-based ranking
+    instead, and the page for that day says so.
+  </p>
+
+  {% if site.categories %}
+    <h2 class="story__headline" style="font-size:1.1rem;">Categories</h2>
+    <ul class="archive-list">
+      {% for cat in site.categories.values() %}
+        <li>
+          <a href="{{ url_for('/category/' ~ cat.slug ~ '/') }}">{{ cat.label }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <h2 class="story__headline" style="font-size:1.1rem;">What this site is not</h2>
+  <p class="story__summary">
+    {{ site.title }} does not run any JavaScript, load any external fonts or scripts, or
+    track visitors in any way. It does not republish full articles, and it does not claim
+    any reporting as its own &mdash; every story links back to the outlets that did the work.
+  </p>
+
+  <h2 class="story__headline" style="font-size:1.1rem;">Contact</h2>
+  <p class="story__summary">
+    Corrections, feed suggestions, or questions: <a href="mailto:{{ site.contact }}">{{ site.contact }}</a>.
+  </p>
+
+{% endblock %}

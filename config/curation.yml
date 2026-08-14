@@ -1,0 +1,118 @@
+# =============================================================================
+# THIS IS THE FILE YOU EDIT.
+#
+# Everything about what the site considers important lives here. Changing a
+# weight changes tomorrow's front page; no code change is needed.
+# Run `python -m wire.cli build --offline --explain` to see how a change moves
+# the scores before you commit it.
+# =============================================================================
+
+version: 1
+
+edition:
+  max_stories: 15           # how many stories reach the front page
+  min_score: 35.0           # below this, a story is not published at all
+  max_per_category: 6       # stops one topic eating the whole edition
+  max_per_source_as_lead: 4 # stops one outlet leading every story
+  max_age_hours: 36         # anything older is treated as not-news
+  timezone: Asia/Karachi
+
+# -----------------------------------------------------------------------------
+# The four criteria. Weights are relative to each other and are normalised
+# before use, so only the ratios matter: doubling every weight changes nothing.
+#
+# Raise a weight to see more of that subject. Set one to 0.0 to switch it off.
+# -----------------------------------------------------------------------------
+categories:
+  politics:
+    label: Politics & Governance
+    weight: 1.00
+    keywords:
+      - assembly, senate, election, ecp, cabinet, judiciary, supreme court
+      - pti, pmln, ppp, mqm, jui, governor, chief minister, prime minister
+      - nab, bill, ordinance, parliament, no-confidence, by-election
+      - constitution, amendment, protest, resignation, sworn in
+
+  economy:
+    label: Economy & Business
+    weight: 1.00
+    keywords:
+      - imf, world bank, adb, inflation, cpi, rupee, dollar, psx, kse-100
+      - sbp, interest rate, policy rate, budget, tax, fbr, exports, imports
+      - remittances, circular debt, tariff, bond, sukuk, default, reserves
+      - privatisation, privatization, gdp, deficit, subsidy, petrol price
+
+  security:
+    label: Security & Foreign Policy
+    weight: 0.95
+    keywords:
+      - ttp, blast, bomb, militant, attack, lashkar, loc, line of control
+      - afghanistan, india, china, cpec, iran, saudi, united states, us
+      - army, isi, dg ispr, ceasefire, border, terror, terrorism, operation
+      - kashmir, balochistan, khyber, torkham, chaman, martyred, security forces
+
+  frontier:
+    label: Tech, Climate, Health, Education, Sport & Culture
+    weight: 0.70
+    keywords:
+      - startup, funding, seed round, venture, fintech, freelancer, it exports
+      - smog, flood, heatwave, glacier, monsoon, climate, air quality, dengue
+      - polio, hospital, vaccine, curriculum, university, hec, exam, board
+      - psl, cricket, hockey, olympics, film, drama, coke studio, music
+
+# -----------------------------------------------------------------------------
+# Heuristic-mode multipliers. These also become priors described to the model,
+# so tuning them shifts both the fallback ranking and the AI ranking.
+# -----------------------------------------------------------------------------
+signals:
+  source_weight: 1.0        # how much outlet trust matters
+  corroboration: 0.9        # how much multi-outlet pickup matters
+  recency_half_life_h: 10   # a story loses half its freshness score in N hours
+  keyword_hit: 0.6          # how much category keyword matches matter
+  lead_position: 0.25       # how much position within the source's feed matters
+
+# -----------------------------------------------------------------------------
+# Model tiers.
+#
+# The point of two tiers is token cost. The worker tier reads every headline and
+# publisher blurb and boils them down; the editor tier only ever sees that
+# distilled output, so the expensive model processes a fraction of the corpus.
+#
+# provider: auto | anthropic | openai | heuristic
+#   auto  -> use whichever API key is present (OPENAI_API_KEY / ANTHROPIC_API_KEY)
+#   If the chosen provider fails, the other one is tried, then the heuristic.
+# -----------------------------------------------------------------------------
+tiers:
+  worker:
+    provider: auto
+    anthropic:
+      model: claude-haiku-4-5
+      effort: low
+    openai:
+      model: gpt-5-mini
+    batch_size: 30
+    parallel: 4
+
+  editor:
+    provider: auto
+    anthropic:
+      model: claude-fable-5   # the "project manager": judgment only, tiny input
+      effort: high
+    openai:
+      model: gpt-5
+    # Hard guard on the entire reason this design exists. If the editor's input
+    # grows past this, we refuse the call rather than quietly paying frontier
+    # rates on the whole corpus.
+    max_input_tokens: 12000
+
+model:
+  max_output_tokens: 16000
+  timeout_s: 600
+  cost_ceiling_usd: 1.50    # abort the AI path entirely rather than exceed this
+
+summary:
+  max_chars: 320
+  min_chars: 80
+  # Leave this false. The RSS <description> is the publisher's own prose, and
+  # rendering it verbatim is exactly the republication we promise not to do.
+  use_publisher_dek_in_fallback: false

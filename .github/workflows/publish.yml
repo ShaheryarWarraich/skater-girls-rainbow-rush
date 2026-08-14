@@ -1,0 +1,106 @@
+name: Publish edition
+
+on:
+  schedule:
+    # 02:00 UTC = 07:00 PKT. Asia/Karachi is UTC+5 with no daylight saving, so
+    # this stays at 7am local all year.
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+    inputs:
+      force_heuristic:
+        description: "Skip every model call and use the deterministic ranker"
+        type: boolean
+        default: false
+      dry_run:
+        description: "Build but do not commit"
+        type: boolean
+        default: false
+
+# There is deliberately NO `push` trigger. That is the structural loop guard:
+# this workflow commits to the repository, and a push trigger would make it
+# retrigger itself forever. Do not add one.
+
+permissions:
+  contents: write   # commit docs/ and state/
+  issues: write     # open the dead-feed issue
+
+concurrency:
+  group: publish
+  cancel-in-progress: false   # never kill a run mid-commit
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Preflight
+        run: python -m wire.cli doctor
+
+      - name: Build edition
+        id: build
+        env:
+          # Injected into this step only. Never written to a file, never passed
+          # as a command-line argument, never echoed.
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          TZ: Asia/Karachi
+        run: |
+          python -m wire.cli build \
+            --out docs \
+            --explain-cost \
+            ${{ inputs.force_heuristic && '--force-heuristic' || '' }}
+
+      - name: Report feed health
+        if: always()
+        run: python -m wire.cli report-health --github || true
+
+      - name: Open an issue for quarantined feeds
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # `report-health` exits 1 when a feed has been quarantined. That is
+          # the only channel anyone actually notices, so it becomes an issue.
+          if python -m wire.cli report-health > /tmp/health.txt 2>&1; then
+            echo "All feeds healthy."
+            exit 0
+          fi
+          TITLE="Feed health: sources failing"
+          EXISTING=$(gh issue list --state open --search "$TITLE in:title" \
+            --json number --jq '.[0].number // empty' || true)
+          BODY=$(printf 'The daily build quarantined one or more feeds after repeated failure.\n\nTheir URLs have most likely moved and need correcting in `config/feeds.yml`.\n\n```\n%s\n```\n\nRun: %s/%s/actions/runs/%s\n' \
+            "$(cat /tmp/health.txt)" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID")
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body "$BODY"
+          else
+            gh issue create --title "$TITLE" --body "$BODY" --label bug || \
+              gh issue create --title "$TITLE" --body "$BODY"
+          fi
+
+      - name: Commit and push
+        if: ${{ !inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          git config user.name  "pakistan-wire-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs state
+          if git diff --staged --quiet; then
+            echo "Nothing changed; not committing."
+            exit 0
+          fi
+          git commit -m "Edition ${{ steps.build.outputs.edition_date }} (${{ steps.build.outputs.mode }}, ${{ steps.build.outputs.story_count }} stories) [skip ci]"
+          git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+          git push

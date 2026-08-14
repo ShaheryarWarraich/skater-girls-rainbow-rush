@@ -1,0 +1,46 @@
+{% set active_nav_slug = category.slug %}
+{% extends "base.html" %}
+
+{% block title %}{{ category.label }} · {{ site.title }}{% endblock %}
+
+{% block content %}
+
+  <p class="story__category" style="display:block; margin-bottom:0.3rem;">{{ category.label }}</p>
+  <h1 class="page-title">{{ page_title }}</h1>
+  <p class="lede">
+    {{ category.label }} stories from the {{ date.strftime('%d %B %Y') }} edition of {{ site.title }}.
+  </p>
+
+  {% if stories %}
+    <ol class="stories">
+      {% for story in stories %}
+        <li class="story" id="story-{{ loop.index }}">
+          <h2 class="story__headline">
+            <a href="{{ story.lead.url }}" rel="noopener nofollow" target="_blank">{{ story.headline }}</a>
+          </h2>
+          <p class="story__summary">{{ story.summary }}</p>
+          {% if story.why_it_matters %}
+            <p class="story__why"><strong>Why it matters:</strong> {{ story.why_it_matters }}</p>
+          {% endif %}
+          <p class="story__sources">
+            Source:
+            <a href="{{ story.lead.source_homepage }}" rel="noopener nofollow" target="_blank">{{ story.lead.source_name }}</a>
+            {% if story.also_reported_by %}
+              <span class="also">
+                Also reported by:
+                {% for article in story.also_reported_by %}<a href="{{ article.url }}" rel="noopener nofollow" target="_blank">{{ article.source_name }}</a>{% if not loop.last %}, {% endif %}{% endfor %}
+              </span>
+            {% endif %}
+          </p>
+        </li>
+      {% endfor %}
+    </ol>
+  {% else %}
+    <p>No {{ category.label|lower }} stories cleared the publication bar in this edition.</p>
+  {% endif %}
+
+  <p class="lede" style="margin-top:2rem;">
+    <a href="{{ url_for('/') }}">&larr; Back to today's edition</a>
+  </p>
+
+{% endblock %}

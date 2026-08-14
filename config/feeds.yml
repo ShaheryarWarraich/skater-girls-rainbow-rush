@@ -1,0 +1,205 @@
+# =============================================================================
+# Source registry.
+#
+# NOTE ON VALIDATION: these URLs could not be reached from the sandbox this file
+# was written in (its egress proxy blocks Pakistani news domains), so treat the
+# list as a starting point, not verified truth. The first GitHub Actions run
+# validates every one of them and writes the result to docs/sources.html and to
+# state/feeds_health.json. Anything red there needs its URL corrected here.
+#
+# FIELDS
+#   weight  0.0-1.5  editorial trust dial; multiplies into the score
+#   owner            media group. Corroboration counts distinct OWNERS, not
+#                    outlets, so a group cross-posting to its own properties
+#                    cannot fake independent confirmation.
+#   tier             national | niche | international
+#   pakistan_filter  international feeds only: require a Pakistan keyword match
+#                    before the story enters the pool at all
+#   title_suffix_re  strips the outlet's brand off the end of every headline
+# =============================================================================
+
+version: 1
+
+defaults:
+  weight: 1.0
+  tier: national
+  lang: en
+  enabled: true
+
+health:
+  disable_after_consecutive_failures: 5
+  probe_disabled_every_n_days: 7
+  reenable_after_consecutive_successes: 2
+
+sources:
+  # --- National English dailies -------------------------------------------
+  - id: dawn
+    name: Dawn
+    owner: dawn-group
+    homepage: https://www.dawn.com/
+    weight: 1.25
+    tier: national
+    title_suffix_re: '\s*[-|–]\s*DAWN\.COM\s*$'
+    feeds:
+      - {id: dawn-home, url: "https://www.dawn.com/feeds/home", category_hint: politics}
+      - {id: dawn-business, url: "https://www.dawn.com/feeds/business", category_hint: economy}
+      - {id: dawn-world, url: "https://www.dawn.com/feeds/world", category_hint: security}
+
+  - id: tribune
+    name: The Express Tribune
+    owner: express-group
+    homepage: https://tribune.com.pk/
+    weight: 1.10
+    tier: national
+    title_suffix_re: '\s*[-|–]\s*The Express Tribune\s*$'
+    feeds:
+      - {id: tribune-home, url: "https://tribune.com.pk/feed/home", category_hint: politics}
+      - {id: tribune-business, url: "https://tribune.com.pk/feed/business", category_hint: economy}
+
+  - id: thenews
+    name: The News International
+    owner: jang-group
+    homepage: https://www.thenews.com.pk/
+    weight: 1.10
+    tier: national
+    feeds:
+      - {id: thenews-national, url: "https://www.thenews.com.pk/rss/1/1", category_hint: politics}
+      - {id: thenews-business, url: "https://www.thenews.com.pk/rss/1/8", category_hint: economy}
+
+  - id: nation
+    name: The Nation
+    owner: nawaiwaqt-group
+    homepage: https://www.nation.com.pk/
+    weight: 0.95
+    tier: national
+    feeds:
+      - {id: nation-main, url: "https://www.nation.com.pk/rss.xml", category_hint: politics}
+
+  - id: dailytimes
+    name: Daily Times
+    owner: dailytimes-group
+    homepage: https://dailytimes.com.pk/
+    weight: 0.90
+    tier: national
+    feeds:
+      - {id: dailytimes-main, url: "https://dailytimes.com.pk/feed/", category_hint: politics}
+
+  - id: pakistantoday
+    name: Pakistan Today
+    owner: pakistantoday-group
+    homepage: https://www.pakistantoday.com.pk/
+    weight: 0.90
+    tier: national
+    feeds:
+      - {id: pakistantoday-main, url: "https://www.pakistantoday.com.pk/feed/", category_hint: politics}
+
+  # --- Broadcast ----------------------------------------------------------
+  # Geo and The News share an owner (jang-group). This is exactly the case the
+  # owner field exists for: their cross-posting must not count as corroboration.
+  - id: geo
+    name: Geo News
+    owner: jang-group
+    homepage: https://www.geo.tv/
+    weight: 1.00
+    tier: national
+    feeds:
+      - {id: geo-latest, url: "https://www.geo.tv/rss/1/1", category_hint: politics}
+
+  - id: ary
+    name: ARY News
+    owner: ary-group
+    homepage: https://arynews.tv/
+    weight: 0.90
+    tier: national
+    feeds:
+      - {id: ary-main, url: "https://arynews.tv/feed/", category_hint: politics}
+
+  - id: samaa
+    name: Samaa TV
+    owner: samaa-group
+    homepage: https://www.samaa.tv/
+    weight: 0.90
+    tier: national
+    feeds:
+      - {id: samaa-main, url: "https://www.samaa.tv/feed/", category_hint: politics}
+
+  - id: bolnews
+    name: BOL News
+    owner: bol-group
+    homepage: https://www.bolnews.com/
+    weight: 0.80
+    tier: national
+    feeds:
+      - {id: bol-main, url: "https://www.bolnews.com/feed/", category_hint: politics}
+
+  - id: dunya
+    name: Dunya News
+    owner: dunya-group
+    homepage: https://dunyanews.tv/
+    weight: 0.85
+    tier: national
+    feeds:
+      - {id: dunya-main, url: "https://dunyanews.tv/en/rss/pakistan", category_hint: politics}
+
+  # --- Business / specialist ----------------------------------------------
+  - id: brecorder
+    name: Business Recorder
+    owner: brecorder-group
+    homepage: https://www.brecorder.com/
+    weight: 1.15
+    tier: niche
+    feeds:
+      - {id: brecorder-latest, url: "https://www.brecorder.com/feeds/latest-news", category_hint: economy}
+      - {id: brecorder-markets, url: "https://www.brecorder.com/feeds/markets", category_hint: economy}
+
+  - id: profit
+    name: Profit by Pakistan Today
+    owner: pakistantoday-group
+    homepage: https://profit.pakistantoday.com.pk/
+    weight: 1.05
+    tier: niche
+    feeds:
+      - {id: profit-main, url: "https://profit.pakistantoday.com.pk/feed/", category_hint: economy}
+
+  # --- International, Pakistan-filtered -----------------------------------
+  # These feeds are overwhelmingly not about Pakistan. Without pakistan_filter
+  # they would flood the pool on volume alone and drown the local outlets.
+  - id: aljazeera
+    name: Al Jazeera
+    owner: aljazeera
+    homepage: https://www.aljazeera.com/
+    weight: 1.20
+    tier: international
+    pakistan_filter: true
+    feeds:
+      - {id: aljazeera-all, url: "https://www.aljazeera.com/xml/rss/all.xml", category_hint: security}
+
+  - id: bbc
+    name: BBC News
+    owner: bbc
+    homepage: https://www.bbc.com/news
+    weight: 1.20
+    tier: international
+    pakistan_filter: true
+    feeds:
+      - {id: bbc-asia, url: "https://feeds.bbci.co.uk/news/world/asia/rss.xml", category_hint: security}
+
+# Keyword gate applied to international feeds (title + blurb, case-insensitive).
+pakistan_filter_keywords:
+  - pakistan
+  - pakistani
+  - islamabad
+  - karachi
+  - lahore
+  - peshawar
+  - quetta
+  - rawalpindi
+  - balochistan
+  - kashmir
+  - khyber
+  - punjab
+  - sindh
+  - imran khan
+  - shehbaz
+  - bilawal
+  - munir

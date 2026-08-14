@@ -1,0 +1,95 @@
+{% set active_nav_slug = "today" if is_today else "archive" %}
+{% extends "base.html" %}
+
+{% block title %}{% if is_today %}{{ site.title }} — {{ edition.date.strftime('%d %B %Y') }}{% else %}{{ edition.date.strftime('%d %B %Y') }} edition · {{ site.title }}{% endif %}{% endblock %}
+
+{% block content %}
+
+  <p class="lede">
+    {% if is_today %}
+      Today's edition &mdash; {{ edition.date.strftime('%A, %d %B %Y') }}
+    {% else %}
+      Archived edition &mdash; {{ edition.date.strftime('%A, %d %B %Y') }}
+    {% endif %}
+  </p>
+
+  {% if edition.is_degraded %}
+    <div class="banner" role="note">
+      <strong>Ranked without full AI curation</strong>
+      {% if edition.degrade_reason %}
+        {{ edition.degrade_reason }}
+      {% else %}
+        This edition was assembled with a fallback ranking method. Story selection and
+        ordering may be less refined than usual.
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% if edition.brief %}
+    <p class="edition-brief">{{ edition.brief }}</p>
+  {% endif %}
+
+  {% if edition.stories %}
+    <ol class="stories">
+      {% for story in edition.stories %}
+        <li class="story" id="story-{{ loop.index }}">
+          <a class="story__category" href="{{ url_for('/category/' ~ story.category ~ '/') }}">
+            {{ site.categories.get(story.category).label if site.categories.get(story.category) else story.category }}
+          </a>
+          <h2 class="story__headline">
+            <a href="{{ story.lead.url }}" rel="noopener nofollow" target="_blank">{{ story.headline }}</a>
+          </h2>
+          <p class="story__summary">{{ story.summary }}</p>
+          {% if story.why_it_matters %}
+            <p class="story__why"><strong>Why it matters:</strong> {{ story.why_it_matters }}</p>
+          {% endif %}
+          <p class="story__sources">
+            Source:
+            <a href="{{ story.lead.source_homepage }}" rel="noopener nofollow" target="_blank">{{ story.lead.source_name }}</a>
+            {% if story.also_reported_by %}
+              <span class="also">
+                Also reported by:
+                {% for article in story.also_reported_by %}<a href="{{ article.url }}" rel="noopener nofollow" target="_blank">{{ article.source_name }}</a>{% if not loop.last %}, {% endif %}{% endfor %}
+              </span>
+            {% endif %}
+          </p>
+        </li>
+      {% endfor %}
+    </ol>
+  {% else %}
+    <p>No stories cleared the publication bar for this edition.</p>
+  {% endif %}
+
+  {% if prev_date or next_date %}
+    <nav class="pager" aria-label="Edition navigation">
+      {% if prev_date %}
+        <a href="{{ url_for('/archive/' ~ prev_date.isoformat() ~ '/') }}">&larr; {{ prev_date.strftime('%d %b %Y') }}</a>
+      {% else %}
+        <span></span>
+      {% endif %}
+      <span class="pager__spacer"></span>
+      {% if next_date %}
+        <a href="{{ url_for('/archive/' ~ next_date.isoformat() ~ '/') }}">{{ next_date.strftime('%d %b %Y') }} &rarr;</a>
+      {% else %}
+        <span></span>
+      {% endif %}
+    </nav>
+  {% endif %}
+
+  {% if archive_dates %}
+    <p class="lede" style="margin-top:2rem;">
+      Browse other days: <a href="{{ url_for('/archive/') }}">full archive</a>
+    </p>
+  {% endif %}
+
+  <details style="margin-top:1.5rem; font-size:0.85rem; color:var(--ink-faint);">
+    <summary>About this edition</summary>
+    <p>
+      {{ edition.stats.feeds_ok }} feeds fetched cleanly, {{ edition.stats.feeds_failed }} failed,
+      {{ edition.stats.feeds_disabled }} disabled &middot; {{ edition.stats.articles_new }} new
+      articles clustered into {{ edition.stats.clusters }} stories &middot; curation mode:
+      {{ edition.mode }}{% if edition.stats.total_cost_usd %} &middot; est. cost ${{ '%.2f'|format(edition.stats.total_cost_usd) }}{% endif %}.
+    </p>
+  </details>
+
+{% endblock %}

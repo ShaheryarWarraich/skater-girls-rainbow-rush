@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Geo News - Latest</title>
+  <link href="https://www.geo.tv/latest" />
+  <id>https://www.geo.tv/latest</id>
+  <updated>2026-08-14T17:30:00+05:00</updated>
+  <entry>
+    <title>Shehbaz Sharif directs authorities to expedite Sindh flood relief</title>
+    <link href="https://www.geo.tv/latest/612340-shehbaz-sharif-directs-authorities-to-expedite-sindh-flood-relief" />
+    <id>https://www.geo.tv/latest/612340</id>
+    <updated>2026-08-14T12:10:00+05:00</updated>
+    <summary>The prime minister ordered relevant departments to speed up relief efforts in flood-hit districts of Sindh during a review meeting.</summary>
+  </entry>
+  <entry>
+    <title>Karachi records heavy traffic disruption after overnight rain</title>
+    <link href="https://www.geo.tv/latest/612335-karachi-records-heavy-traffic-disruption-after-overnight-rain" />
+    <id>https://www.geo.tv/latest/612335</id>
+    <updated>2026-08-14T08:45:00+05:00</updated>
+    <summary>Several Karachi roads remained waterlogged on Friday morning after heavy overnight rainfall disrupted traffic across the city.</summary>
+  </entry>
+  <entry>
+    <title>Pakistan cricket board announces squad for upcoming Asia Cup</title>
+    <link href="https://www.geo.tv/latest/612320-pakistan-cricket-board-announces-squad-for-upcoming-asia-cup" />
+    <id>https://www.geo.tv/latest/612320</id>
+    <updated>2026-08-13T22:00:00+05:00</updated>
+    <summary>The PCB named a 16-member squad for the Asia Cup, with a young pace bowler included for the first time.</summary>
+  </entry>
+  <entry>
+    <title>Petrol prices likely to rise in next fortnightly review</title>
+    <link href="https://www.geo.tv/latest/612312-petrol-prices-likely-to-rise-in-next-fortnightly-review" />
+    <id>https://www.geo.tv/latest/612312</id>
+    <updated>2026-08-13T19:30:00+05:00</updated>
+    <summary>Sources in the finance ministry said petrol prices may increase by up to five rupees per litre in the next review.</summary>
+  </entry>
+  <entry>
+    <title>Balochistan government announces compensation for attack victims</title>
+    <link href="https://www.geo.tv/latest/612300-balochistan-government-announces-compensation-for-attack-victims" />
+    <id>https://www.geo.tv/latest/612300</id>
+    <updated>2026-08-13T16:15:00+05:00</updated>
+    <summary>The provincial government announced financial compensation for families of those killed in recent militant attacks in Balochistan.</summary>
+  </entry>
+</feed>

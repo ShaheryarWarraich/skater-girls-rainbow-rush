@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  pull_request:
+    paths-ignore:
+      # Generated output. A PR that only touches these is the bot's own commit
+      # and has nothing to test.
+      - "docs/**"
+      - "state/**"
+  push:
+    branches: [main]
+    paths-ignore:
+      - "docs/**"
+      - "state/**"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt pytest
+
+      - name: Tests
+        run: python -m pytest tests/ -q
+
+      - name: Offline build must succeed with no API key
+        # Fork PRs get no secrets, so this exercises the degraded path for free
+        # — the path that has to work on the worst day.
+        env:
+          ANTHROPIC_API_KEY: ""
+          OPENAI_API_KEY: ""
+        run: |
+          set -euo pipefail
+          python -m wire.cli --state /tmp/ci-state build \
+            --offline --date 2026-08-14 --out /tmp/ci-out
+          for f in index.html feed.xml sources.html about.html sitemap.xml .nojekyll; do
+            test -s "/tmp/ci-out/$f" || { echo "missing or empty: $f"; exit 1; }
+          done
+          echo "Offline build produced a complete site."
+
+      - name: Publisher prose must not reach the output
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import sys, pathlib, html, feedparser
+          built = pathlib.Path("/tmp/ci-out").rglob("*.html")
+          pages = "\n".join(p.read_text(encoding="utf-8") for p in built)
+          leaked = []
+          for fx in pathlib.Path("fixtures").glob("*.xml"):
+              for e in feedparser.parse(fx.read_bytes()).entries:
+                  blurb = html.unescape(e.get("description") or e.get("summary") or "")
+                  probe = " ".join(blurb.split()[:10])
+                  if len(probe.split()) >= 8 and probe in pages:
+                      leaked.append((fx.name, probe[:60]))
+          if leaked:
+              print("Publisher text leaked into the rendered site:")
+              for name, probe in leaked:
+                  print(f"  {name}: {probe}")
+              sys.exit(1)
+          print("No publisher prose in the rendered site.")
+          PY

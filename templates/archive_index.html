@@ -1,0 +1,27 @@
+{% set active_nav_slug = "archive" %}
+{% extends "base.html" %}
+
+{% block title %}Archive · {{ site.title }}{% endblock %}
+
+{% block content %}
+
+  <h1 class="page-title">{{ page_title }}</h1>
+  <p class="lede">Every past edition of {{ site.title }}, newest first.</p>
+
+  {% if editions %}
+    <ul class="archive-list">
+      {% for ed in editions %}
+        <li>
+          <a href="{{ ed.url }}">{{ ed.date.strftime('%A, %d %B %Y') }}</a>
+          <span class="meta">
+            {{ ed.story_count }} {{ 'story' if ed.story_count == 1 else 'stories' }}
+            {% if ed.mode != 'ai' %}&middot; {{ ed.mode }} mode{% endif %}
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No editions have been published yet.</p>
+  {% endif %}
+
+{% endblock %}
