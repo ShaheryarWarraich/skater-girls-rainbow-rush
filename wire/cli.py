@@ -46,6 +46,9 @@ def main(argv: list[str] | None = None) -> int:
     b.add_argument("--offline", action="store_true",
                    help="read fixtures instead of the network")
     b.add_argument("--fixtures", type=Path, default=ROOT / "fixtures")
+    b.add_argument("--record", action="store_true",
+                   help="save fetched feeds into --fixtures (refresh test data "
+                        "from a machine that can reach the sources)")
     b.add_argument("--force-heuristic", action="store_true",
                    help="skip every model call and use the deterministic ranker")
     b.add_argument("--dry-run", action="store_true",
@@ -109,6 +112,10 @@ def cmd_build(args: argparse.Namespace, cfg: Config) -> int:
         cfg, due, health_store.as_dict(),
         offline_dir=args.fixtures if args.offline else None,
     )
+
+    if args.record and not args.offline:
+        saved = _record_fixtures(results, args.fixtures)
+        log.info("recorded %d feed(s) into %s", saved, args.fixtures)
 
     feeds_by_id = {f.id: f for f in cfg.all_feeds}
     articles = []
@@ -293,6 +300,24 @@ def cmd_clean(args: argparse.Namespace, cfg: Config) -> int:
 
 
 # ---------------------------------------------------------------------------
+
+
+def _record_fixtures(results: list, fixtures: Path) -> int:
+    """Save fetched feed bodies as offline fixtures.
+
+    The environment this project was built in cannot reach Pakistani news
+    domains, so the committed fixtures are hand-written. Running `build --record`
+    from a machine that *can* reach them replaces those with real payloads,
+    which is the only honest way to test against what the outlets actually emit.
+    """
+    fixtures.mkdir(parents=True, exist_ok=True)
+    saved = 0
+    for result in results:
+        if not result.ok or not result.body:
+            continue
+        (fixtures / f"{result.feed_id}.xml").write_bytes(result.body)
+        saved += 1
+    return saved
 
 
 def _now(pinned: str | None) -> datetime:
